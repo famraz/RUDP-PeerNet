@@ -1,0 +1,15 @@
+RUDPSocket is a reliable, ordered message pipe over UDP.
+You call send(addr, bytes) and it blocks until the peer has the whole message, even with packet loss, duplication or reordering.
+On the other side recv() returns exactly those bytes, once, in order.
+
+The API You can use:
+////////
+
+from rudp import RUDPSocket, LossyLink
+
+s = RUDPSocket(port=9000)                       # ONE per peer process, shared by all modules
+s.send(("127.0.0.1", 9001), msg_bytes, stream=1) # blocks until ACKed; raises ConnectionError if peer is dead
+addr, stream, msg = s.recv(timeout=5)           # raises queue.Empty on timeout
+s = RUDPSocket(port=9000, link=LossyLink(loss=0.2))  # for testing under loss
+
+/////////
